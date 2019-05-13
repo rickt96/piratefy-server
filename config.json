@@ -1,0 +1,20 @@
+{
+    "db": "musicdb_full.sqlite",
+
+    "scanner": {
+        "api_key" : "21dde19ce5f13edddc9e3fea33bddb78",
+		"ddl" : "structure.sql",
+        "dirs": [
+            "E:\\MUSICA"
+        ],
+        "ignore": [
+            "E:\\MUSICA\\Varie"
+        ],
+        "exts": [ ".mp3", ".flac" ],
+        "last_scan" : "2018-11-10 17:00:00"
+    },
+    
+    "server": {
+        "service_port" : 5000
+    }
+}
