@@ -76,10 +76,10 @@ cfg = Config(CONFIG_PATH)
 # drop old db
 delete(cfg.getdb())
 
-# open database connection (create it)
+# apre la connessione al database indicato dal parametro (se il file non esiste lo crea)
 db = Database(cfg.getdb())
 
-#database DDL
+# creazione schema ddl del database
 with open(cfg.getschema()) as sh:
     ddl = sh.read()
 db.executescript(ddl)
