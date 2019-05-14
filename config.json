@@ -1,11 +1,11 @@
 {
-    "db": "musicdb_full.sqlite",
+    "db_path": "test.sqlite",
 
     "scanner": {
         "api_key" : "21dde19ce5f13edddc9e3fea33bddb78",
-		"ddl" : "structure.sql",
+		"db_schema" : "structure.sql",
         "dirs": [
-            "E:\\MUSICA"
+            "D:\\MUSICA\\American Head Charge"
         ],
         "ignore": [
             "E:\\MUSICA\\Varie"

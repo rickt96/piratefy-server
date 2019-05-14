@@ -62,6 +62,8 @@ from core import *
 
 
 
+
+
 # ############################################################################
 # 1. Inizializzazione
 # ############################################################################
@@ -90,6 +92,11 @@ start_time = time.time()
 
 
 
+# check file configurazione
+""" if len(cfg.getdirs()) == 0 or len(cfg.getexts()) == 0:
+    exit() """
+
+
 # ############################################################################
 # 2. Scansione canzoni grezze
 # ############################################################################
@@ -98,7 +105,7 @@ print("* start directories scanning...")
 
 sc = Scanner()
 
-files = sc.getfiles(cfg.getexts(), cfg.getdirs())       # testare sta funzione nuova!!
+""" files = sc.getfiles(cfg.getexts(), cfg.getdirs())       # testare sta funzione nuova!!
 
 for file in files:
     try:
@@ -112,10 +119,10 @@ for file in files:
         
     except Exception as ex:
         print(str(ex))
-        errors += 1
+        errors += 1 """
 
 
-""" for dir in cfg.getdirs():
+for dir in cfg.getdirs():
     
     print("* searching ",dir)
 
@@ -128,20 +135,20 @@ for file in files:
                 
                 try:
                     
-                    title, artist, album, date, trackno, length = sc.getsongtags(fullpath)
+                    title, artist, album, date, trackno, length = sc.getsongtags_new(fullpath) # nuova funzione con eyed3 da testare!
 
                     db.execute(
-                        "INSERT INTO songs_raw VALUES(?,?,?,?,?,?, ?);", 
+                        "INSERT INTO songs_raw VALUES(?,?,?,?,?,?,?);", 
                         title, album, artist, date, length, trackno, fullpath
                     ) # test se funziona il metodo execute, devo trovare il modo di passarei vari parametri
 
                     added += 1
                     
                 except Exception as ex:
-                    print(str(ex))
+                    print("errore: ", str(ex))
                     errors += 1
 
-db.commit() """
+db.commit()
 
 
 

@@ -1,0 +1,17 @@
+pytaglib ha la mamma puttana
+devo pensare di passare ad eyed3
+
+pip install eyed3
+
+se durante l'import da l'errore di libmagic
+installare magic (vedi qui sotto)
+
+pip install python-magic-bin==0.4.14
+
+poi migra tutto lo scan al eyed3
+
+
+https://stackoverflow.com/questions/46518690/pip-installing-eyed3-module-failed-to-find-libmagic
+
+https://eyed3.readthedocs.io/en/latest/index.html
+

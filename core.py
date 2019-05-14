@@ -1,6 +1,8 @@
 import json
 import sqlite3
-import taglib
+#import taglib #TO REMOVE
+#from eyed3 import id3
+import eyed3
 import os
 import sys
 
@@ -96,7 +98,7 @@ class Config:
                 self.cfg = json.load(jh)
 
     def getdb(self):
-        return self.cfg["db"]
+        return self.cfg["db_path"]
 
     def getapikey(self):
         return self.cfg["scanner"]["api_key"]
@@ -108,7 +110,7 @@ class Config:
         return self.cfg["scanner"]["exts"]
 
     def getschema(self):
-        return self.cfg["scanner"]["ddl"]
+        return self.cfg["scanner"]["db_schema"]
 
     def getdirs(self):
         '''return valid directories from config'''
@@ -146,9 +148,11 @@ class Scanner:
             return out
 
 
-        s = taglib.File(song_path)
         title = album = artist = "" 
         date = trackno = 0
+
+        """ s = taglib.File(song_path)
+        
 
         if "TITLE" in s.tags:
             if len(s.tags["TITLE"]) > 0:
@@ -171,8 +175,29 @@ class Scanner:
             if len(s.tags["TRACKNUMBER"]) > 0:
                 trackno = s.tags["TRACKNUMBER"][0]
                 trackno = _cleartrack(trackno)
-
+ """
         return title, artist, album, date, trackno, s.length
+
+
+    def getsongtags_new(self, song_path):
+        '''return song metadata'''
+
+        title = album = artist = "" 
+        date = trackno = length = 0
+
+        audiofile = eyed3.load(song_path)
+
+        title = audiofile.tag.title
+        album = audiofile.tag.album
+        artist = audiofile.tag.artist
+        #date = audiofile.tag.getBestDate().year # eccezzione del tipo Invalid v2.3 TYER, TDAT, or TIME frame: Invalid date string: 2007--
+        trackno = audiofile.tag.track_num[0]
+        length = round(audiofile.info.time_secs)
+
+        return title, artist, album, date, trackno, length
+
+
+
 
     def getfiles(self, exts=[], paths=[]):
         '''find and return all files with specified extension in the indicated paths'''
