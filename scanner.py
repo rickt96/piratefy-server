@@ -103,8 +103,11 @@ start_time = time.time()
 
 print("* start directories scanning...")
 
+songs = getFiles(cfg.getDirs())
 
-for dir in cfg.getDirs():
+for song in songs:
+    
+""" for dir in cfg.getDirs():
     
     print("* searching ",dir)
 
@@ -130,7 +133,7 @@ for dir in cfg.getDirs():
                     print("errore: ", str(ex))
                     errors += 1
 
-db.commit()
+db.commit() """
 
 
 

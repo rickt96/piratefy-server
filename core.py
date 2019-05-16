@@ -4,6 +4,7 @@ import sqlite3
 import eyed3
 import os
 import sys
+from mp3_tagger import MP3File, VERSION_1
 
 
 
@@ -60,6 +61,13 @@ def getSongTags(song_path):
     length = round(audiofile.info.time_secs)
 
     return title, artist, date, album, trackno, length
+
+def getSongTags_new(song_path):
+
+    mp3 = MP3File(song_path)
+    mp3.set_version(VERSION_1)
+    tags = mp3.get_tags()
+    return tags["song"], tags["artist"], tags["year"], tags["album"], tags["track"], "length"
 
 
 

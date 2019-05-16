@@ -17,3 +17,11 @@ $ pip install python-magic-bin==0.4.14
 test import eyed3
 https://stackoverflow.com/questions/46518690/pip-installing-eyed3-module-failed-to-find-libmagic
 https://eyed3.readthedocs.io/en/latest/index.html
+
+
+###############
+# MUTAGEN
+###############
+$ pip install mutagen
+https://pypi.org/project/mutagen/
+https://mutagen.readthedocs.io/en/latest/user/index.html
