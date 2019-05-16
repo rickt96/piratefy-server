@@ -74,15 +74,15 @@ print("* initialization...")
 cfg = Config(CONFIG_PATH)
 
 # drop old db
-delete(cfg.getdb())
+delete(cfg.getDb())
 
 # apre la connessione al database indicato dal parametro (se il file non esiste lo crea)
-db = Database(cfg.getdb())
+db = Database(cfg.getDb())
 
 # creazione schema ddl del database
-with open(cfg.getschema()) as sh:
+with open(cfg.getSchema()) as sh:
     ddl = sh.read()
-db.executescript(ddl)
+db.executeScript(ddl)
 
 # count operazioni
 added, errors = 0,0
@@ -103,26 +103,8 @@ start_time = time.time()
 
 print("* start directories scanning...")
 
-sc = Scanner()
 
-""" files = sc.getfiles(cfg.getexts(), cfg.getdirs())       # testare sta funzione nuova!!
-
-for file in files:
-    try:
-        title, artist, album, date, trackno, length = sc.getsongtags(file)
-
-        db.execute(
-            "INSERT INTO songs_raw VALUES(?,?,?,?,?,?, ?);", 
-            title, album, artist, date, length, trackno, file
-        )
-        added += 1
-        
-    except Exception as ex:
-        print(str(ex))
-        errors += 1 """
-
-
-for dir in cfg.getdirs():
+for dir in cfg.getDirs():
     
     print("* searching ",dir)
 
@@ -131,11 +113,11 @@ for dir in cfg.getdirs():
         for f in files:
             
             fullpath = os.path.join(root, f)
-            if os.path.splitext(fullpath)[1] in cfg.getexts():
+            if os.path.splitext(fullpath)[1] in cfg.getExts():
                 
                 try:
                     
-                    title, artist, album, date, trackno, length = sc.getsongtags_new(fullpath) # nuova funzione con eyed3 da testare!
+                    title, artist, album, date, trackno, length = getSongTags(fullpath) # nuova funzione con eyed3 da testare!
 
                     db.execute(
                         "INSERT INTO songs_raw VALUES(?,?,?,?,?,?,?);", 
@@ -229,7 +211,7 @@ for i in range(len(selartists)):
         req = urllib.request.urlopen(
             "http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist={0}&api_key={1}&format=json".format(
                 artist_name.replace(" ","+"), 
-                cfg.getapikey()
+                cfg.getApiKey()
                 ).encode('ascii', 'ignore').decode('ascii'))
 
         html = req.read()
@@ -278,7 +260,7 @@ for i in range(len(selalbums)):
             "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&artist={0}&album={1}&api_key={2}&format=json".format(
                 artist_name.replace(" ","+"),
                 album_title.replace(" ","+"),
-                cfg.getapikey()
+                cfg.getApiKey()
                 ).encode('ascii', 'ignore').decode('ascii'))
 
         html = req.read()

@@ -1,20 +1,9 @@
 {
     "db_path": "test.sqlite",
-
-    "scanner": {
-        "api_key" : "21dde19ce5f13edddc9e3fea33bddb78",
-		"db_schema" : "structure.sql",
-        "dirs": [
-            "D:\\MUSICA\\American Head Charge"
-        ],
-        "ignore": [
-            "E:\\MUSICA\\Varie"
-        ],
-        "exts": [ ".mp3", ".flac" ],
-        "last_scan" : "2018-11-10 17:00:00"
-    },
-    
-    "server": {
-        "service_port" : 5000
-    }
+    "api_key" : "21dde19ce5f13edddc9e3fea33bddb78",
+    "db_schema" : "structure.sql",
+    "dirs": [ "D:\\MUSICA\\Crazy Town" ],
+    "ignore": [ "E:\\MUSICA\\Varie" ],
+    "last_scan" : "2018-11-10 17:00:00",
+    "server_port" : 5000
 }
