@@ -4,9 +4,10 @@ import sqlite3
 import eyed3
 import os
 import sys
-from mp3_tagger import MP3File, VERSION_1
 
+# -*- coding: utf-8 -*-
 
+eyed3.log.setLevel("ERROR")
 
 
 ################################################################################
@@ -62,12 +63,29 @@ def getSongTags(song_path):
 
     return title, artist, date, album, trackno, length
 
-def getSongTags_new(song_path):
 
-    mp3 = MP3File(song_path)
-    mp3.set_version(VERSION_1)
-    tags = mp3.get_tags()
-    return tags["song"], tags["artist"], tags["year"], tags["album"], tags["track"], "length"
+
+def getEyeD3Tags(path):
+    """ottiene i tag del file mp3"""
+    try:
+        tags = {
+            "title" : "",
+            "artist" : "",
+            "album" : "",
+            "tracknum" : 0,
+            "date" : 0,
+            "length" : 0
+        }
+        audiofile = eyed3.load(path)
+        tags["title"] = audiofile.tag.title
+        tags["artist"] = audiofile.tag.artist
+        tags["album"] = audiofile.tag.album
+        tags["tracknum"] = audiofile.tag.track_num[0]
+        tags["date"] = audiofile.tag.getBestDate().year # verificare possibili errori qui
+        tags["length"] = round(audiofile.info.time_secs)
+        return tags
+    except Exception as e:
+        print(path, ": ", str(e))
 
 
 

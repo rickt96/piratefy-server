@@ -92,10 +92,6 @@ start_time = time.time()
 
 
 
-# check file configurazione
-""" if len(cfg.getdirs()) == 0 or len(cfg.getexts()) == 0:
-    exit() """
-
 
 # ############################################################################
 # 2. Scansione canzoni grezze
@@ -105,35 +101,18 @@ print("* start directories scanning...")
 
 songs = getFiles(cfg.getDirs())
 
+print("* {} songs found".format(len(songs)))
+
 for song in songs:
-    
-""" for dir in cfg.getDirs():
-    
-    print("* searching ",dir)
+    try:
+        title, artist, album, date, trackno, length = getEyeD3Tags(song)
+        db.execute("INSERT INTO songs_raw VALUES(?, ?, ?, ?, ?, ?, ?);", title, album, artist, date, length, trackno, song)
+        added += 1
+    except Exception as ex:
+        print("errore: ", str(ex))
+        errors += 1
+db.commit()
 
-    for root, dirs, files in os.walk(dir):
-        
-        for f in files:
-            
-            fullpath = os.path.join(root, f)
-            if os.path.splitext(fullpath)[1] in cfg.getExts():
-                
-                try:
-                    
-                    title, artist, album, date, trackno, length = getSongTags(fullpath) # nuova funzione con eyed3 da testare!
-
-                    db.execute(
-                        "INSERT INTO songs_raw VALUES(?,?,?,?,?,?,?);", 
-                        title, album, artist, date, length, trackno, fullpath
-                    ) # test se funziona il metodo execute, devo trovare il modo di passarei vari parametri
-
-                    added += 1
-                    
-                except Exception as ex:
-                    print("errore: ", str(ex))
-                    errors += 1
-
-db.commit() """
 
 
 
@@ -143,7 +122,6 @@ db.commit() """
 
 print("* building artists list...")
 
-
 # inserimento distinct artisti
 db.execute("""
 insert into artists (name)
@@ -151,6 +129,7 @@ select distinct artist
 from songs_raw;
 """)
 db.commit()
+
 
 
 
@@ -169,6 +148,7 @@ select distinct album,
 from songs_raw as sr;
 """)
 db.commit()
+
 
 
 
@@ -235,6 +215,7 @@ db.commit()
 
 
 
+
 # ############################################################################
 # 7. ottenimento copertine album lastfm [RICHIESTA CONNESSIONE]
 # ############################################################################
@@ -283,13 +264,13 @@ db.commit()
 
 
 
+
 # ############################################################################
 # 8. chiusura programma
 # ############################################################################
 
 print("\n* script ended in {} secs".format(round(time.time() - start_time,1)))
-print("* {} tracks found".format(added))
-print("* {} errors detected".format(errors))
+print("* {} tracks found | {} errors detected".format(added, errors))
 
 # chiusura connessione
 db.close()
