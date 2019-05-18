@@ -25,3 +25,7 @@ https://eyed3.readthedocs.io/en/latest/index.html
 $ pip install mutagen
 https://pypi.org/project/mutagen/
 https://mutagen.readthedocs.io/en/latest/user/index.html
+
+
+
+da vedere perchè i tag restituiscono una tupla porca merda

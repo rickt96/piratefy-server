@@ -66,26 +66,33 @@ def getSongTags(song_path):
 
 
 def getEyeD3Tags(path):
-    """ottiene i tag del file mp3"""
+    """restituisce i tag del file mp3"""
+    # https://www.programiz.com/python-programming/methods/built-in/str
+    result = {
+        "error" : True,
+        "message" : "",
+        "tags" : { }
+    }
+
     try:
-        tags = {
-            "title" : "",
-            "artist" : "",
-            "album" : "",
-            "tracknum" : 0,
-            "date" : 0,
-            "length" : 0
-        }
         audiofile = eyed3.load(path)
-        tags["title"] = audiofile.tag.title
-        tags["artist"] = audiofile.tag.artist
-        tags["album"] = audiofile.tag.album
-        tags["tracknum"] = audiofile.tag.track_num[0]
-        tags["date"] = audiofile.tag.getBestDate().year # verificare possibili errori qui
-        tags["length"] = round(audiofile.info.time_secs)
-        return tags
+        if audiofile is not None:
+            result["tags"]["title"] = "unknown title" if audiofile.tag.title is None else audiofile.tag.title[0],
+            result["tags"]["artist"] = "unknown artist" if audiofile.tag.artist is None else audiofile.tag.artist[0],
+            result["tags"]["album"] = "unknown album" if audiofile.tag.album is None else audiofile.tag.album[0],
+            result["tags"]["tracknum"] = 0 if audiofile.tag.track_num[0] is None else audiofile.tag.track_num[0],
+            result["tags"]["year"] = 0 if audiofile.tag.getBestDate() is None else audiofile.tag.getBestDate().year,
+            result["tags"]["length"] = round(audiofile.info.time_secs)
+            result["error"] = False
+        else:
+            result["error"] = True
+            result["message"] = "unable to read file - "+path
+
     except Exception as e:
-        print(path, ": ", str(e))
+        result["error"] = True
+        result["message"] = str(e) + " - " + path
+
+    return result
 
 
 

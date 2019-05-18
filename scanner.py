@@ -103,11 +103,27 @@ songs = getFiles(cfg.getDirs())
 
 print("* {} songs found".format(len(songs)))
 
+print("* fetching track metadata")
+
+
+
 for song in songs:
     try:
-        title, artist, album, date, trackno, length = getEyeD3Tags(song)
-        db.execute("INSERT INTO songs_raw VALUES(?, ?, ?, ?, ?, ?, ?);", title, album, artist, date, length, trackno, song)
-        added += 1
+        res = getEyeD3Tags(song)
+        if res["error"] == False:
+            db.execute(
+                "INSERT INTO songs_raw VALUES(?,?,?,?,?,?,?);", 
+                str(res["tags"]["title"]), 
+                str(res["tags"]["album"]), 
+                str(res["tags"]["artist"]),
+                str(res["tags"]["year"]),
+                int(res["tags"]["length"]),
+                int(res["tags"]["tracknum"][0]),
+                song)
+            added += 1
+        else:
+            print(res["message"])
+            errors += 1
     except Exception as ex:
         print("errore: ", str(ex))
         errors += 1
