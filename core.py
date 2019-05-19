@@ -4,6 +4,7 @@ import sqlite3
 import eyed3
 import os
 import sys
+import glob
 
 # -*- coding: utf-8 -*-
 
@@ -48,26 +49,23 @@ def delete(file_path):
         print("unable to delete file: ", ex)
         return False
 
-def getSongTags(song_path):
-    '''return song metadata'''
-    title = album = artist = "" 
-    date = trackno = length = 0
-
-    audiofile = eyed3.load(song_path)
-    title = audiofile.tag.title
-    album = audiofile.tag.album
-    artist = audiofile.tag.artist
-    #date = audiofile.tag.getBestDate().year # eccezzione del tipo Invalid v2.3 TYER, TDAT, or TIME frame: Invalid date string: 2007--
-    trackno = audiofile.tag.track_num[0]
-    length = round(audiofile.info.time_secs)
-
-    return title, artist, date, album, trackno, length
+def setEyeD3Tags(path, title='', artist='', album='', track=0, genre='', year=0 ):
+    audiofile = eyed3.load(path)
+    audiofile.tag.title = title
+    audiofile.tag.artist = artist
+    audiofile.tag.album = album
+    audiofile.tag.track_num = track
+    audiofile.tag.genre = genre
+    audiofile.tag.year = year
+    audiofile.tag.save(path)
 
 
 
 def getEyeD3Tags(path):
     """restituisce i tag del file mp3"""
     # https://www.programiz.com/python-programming/methods/built-in/str
+    # https://gist.github.com/sinewalker/c636025bfc4bf3cc3e9992f212a40afa
+    # https://stackoverflow.com/questions/8948/accessing-mp3-meta-data-with-python
     result = {
         "error" : True,
         "message" : "",
@@ -75,13 +73,18 @@ def getEyeD3Tags(path):
     }
 
     try:
-        audiofile = eyed3.load(path)
+        audiofile = eyed3.load(path) # test
         if audiofile is not None:
-            result["tags"]["title"] = "unknown title" if audiofile.tag.title is None else audiofile.tag.title[0],
-            result["tags"]["artist"] = "unknown artist" if audiofile.tag.artist is None else audiofile.tag.artist[0],
-            result["tags"]["album"] = "unknown album" if audiofile.tag.album is None else audiofile.tag.album[0],
-            result["tags"]["tracknum"] = 0 if audiofile.tag.track_num[0] is None else audiofile.tag.track_num[0],
-            result["tags"]["year"] = 0 if audiofile.tag.getBestDate() is None else audiofile.tag.getBestDate().year,
+            title = "unknown title" if audiofile.tag.title is None else audiofile.tag.title     # ridondanza di codice, ma se dichiaro tutto nel dizionario legge come tuple
+            artist = "unknown artist" if audiofile.tag.artist is None else audiofile.tag.artist
+            album = "unknown album" if audiofile.tag.album is None else audiofile.tag.album
+            tracknum = 0 if audiofile.tag.track_num[0] is None else audiofile.tag.track_num[0]
+            year = 0 if audiofile.tag.getBestDate() is None else audiofile.tag.getBestDate().year
+            result["tags"]["title"] = title
+            result["tags"]["artist"] = artist
+            result["tags"]["album"] = album
+            result["tags"]["tracknum"] = tracknum
+            result["tags"]["year"] = year
             result["tags"]["length"] = round(audiofile.info.time_secs)
             result["error"] = False
         else:
@@ -98,8 +101,7 @@ def getEyeD3Tags(path):
 
 def getFiles(directories=[]):
     files = []
-    for directory in directories:
-        # r=root, d=directories, f = files
+    for directory in directories:           # r=root, d=directories, f=files
         for r, d, f in os.walk(directory):
             for file in f:
                 if file.endswith('.mp3'): # tuple(extensions)
@@ -182,13 +184,16 @@ class Config:
         return self.cfg["api_key"]
 
     def getPort(self):
-        return self.cfg["service_port"]
+        return self.cfg["server_port"]
 
     def getExts(self):
         return self.cfg["exts"]
 
     def getSchema(self):
         return self.cfg["db_schema"]
+
+    def getFetchMetadata(self):
+        return self.cfg["fetch_metadata"]
 
     def getDirs(self):
         '''return valid directories from config'''

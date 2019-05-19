@@ -42,7 +42,6 @@ dirs = ["D:\\MUSICA\\Airbourne\\"]
 songs = getFiles(dirs)
 for song in songs:
     res = getEyeD3Tags(song)
-    if res["error"]:
-        print(res)
+    print(res)
 
 #file.close() 

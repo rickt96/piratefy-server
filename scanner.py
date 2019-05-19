@@ -105,20 +105,18 @@ print("* {} songs found".format(len(songs)))
 
 print("* fetching track metadata")
 
-
-
 for song in songs:
     try:
         res = getEyeD3Tags(song)
-        if res["error"] == False:
+        if not res["error"]:
             db.execute(
                 "INSERT INTO songs_raw VALUES(?,?,?,?,?,?,?);", 
-                str(res["tags"]["title"]), 
-                str(res["tags"]["album"]), 
-                str(res["tags"]["artist"]),
-                str(res["tags"]["year"]),
-                int(res["tags"]["length"]),
-                int(res["tags"]["tracknum"][0]),
+                res["tags"]["title"], 
+                res["tags"]["album"], 
+                res["tags"]["artist"],
+                res["tags"]["year"],
+                res["tags"]["length"],
+                res["tags"]["tracknum"],
                 song)
             added += 1
         else:
@@ -139,6 +137,7 @@ db.commit()
 print("* building artists list...")
 
 # inserimento distinct artisti
+# popola la tabella artisti cercando i vari nomi dalla tabella songs_raw
 db.execute("""
 insert into artists (name)
 select distinct artist
@@ -156,6 +155,7 @@ db.commit()
 print("* building albums list...")
 
 # inserimento distinct degli album
+# popola la tabella degli album prendendo prendendo i valori dalla tabella delle songs_raw
 db.execute("""
 insert into albums (title, artist_id, year)
 select distinct album,
@@ -175,6 +175,7 @@ db.commit()
 print("* building songs list...")
 
 # inserimento canzoni clean
+# ottiene i valori delle canzoni leggendoli da songs_raw ed albums
 db.execute("""
 insert into songs(title, album_id, length, track_no, path)
 select  s.title,
@@ -188,95 +189,95 @@ db.commit()
 
 
 
+if cfg.getFetchMetadata():
 
-# ############################################################################
-# 6. ottenimento metadati artisti lastfm [RICHIESTA CONNESSIONE]
-# ############################################################################
+    # ############################################################################
+    # 6. ottenimento metadati biografia/immagine artisti lastfm [RICHIESTA CONNESSIONE]
+    # ############################################################################
 
-print("* getting artists metadata...")
+    print("* getting artists metadata...")
 
-# ottenimento di tutti gli artisti
-selartists = db.select("SELECT * FROM artists;")
+    selartists = db.select("SELECT * FROM artists;")
 
-for i in range(len(selartists)):
+    for i in range(len(selartists)):
 
-    artist_name = selartists[i]["NAME"]
-    artist_id = selartists[i]["ARTIST_ID"]
+        artist_name = selartists[i]["NAME"]
+        artist_id = selartists[i]["ARTIST_ID"]
 
-    try:
+        try:
 
-        progress(i+1, len(selartists))
+            progress(i+1, len(selartists))
 
-        req = urllib.request.urlopen(
-            "http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist={0}&api_key={1}&format=json".format(
-                artist_name.replace(" ","+"), 
-                cfg.getApiKey()
-                ).encode('ascii', 'ignore').decode('ascii'))
+            req = urllib.request.urlopen(
+                "http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist={0}&api_key={1}&format=json".format(
+                    artist_name.replace(" ","+"), 
+                    cfg.getApiKey()
+                    ).encode('ascii', 'ignore').decode('ascii'))
 
-        html = req.read()
-        json_data = json.loads(html)
+            html = req.read()
+            json_data = json.loads(html)
 
-        if "artist" in json_data:
-            artist_bio = json_data["artist"]["bio"]["summary"]
-            artist_img = json_data["artist"]["image"][3]["#text"]
-            db.execute(
-                "update artists set biography = ?, image_url = ? where artist_id = ?; ",
-                artist_bio, artist_img, artist_id
-            )    
+            if "artist" in json_data:
+                artist_bio = json_data["artist"]["bio"]["summary"]
+                artist_img = json_data["artist"]["image"][3]["#text"]
+                db.execute(
+                    "update artists set biography = ?, image_url = ? where artist_id = ?; ",
+                    artist_bio, artist_img, artist_id
+                )    
 
-    except Exception as e:
-        pass
+        except Exception as e:
+            pass
 
-db.commit()
-
-
+    db.commit()
 
 
-# ############################################################################
-# 7. ottenimento copertine album lastfm [RICHIESTA CONNESSIONE]
-# ############################################################################
-
-print("\n* getting albums metadata...")
 
 
-# ottenimento dell'elenco degli album locali ed iterazione per ottenere i metadati
-selalbums = db.select("""
-                SELECT al.ALBUM_ID, al.TITLE, ar.name as "ARTIST_NAME" 
-                FROM albums as al 
-                inner join artists as ar on al.artist_id = ar.artist_id;
-            """)
+    # ############################################################################
+    # 7. ottenimento copertine album lastfm [RICHIESTA CONNESSIONE]
+    # ############################################################################
 
-for i in range(len(selalbums)):
+    print("\n* getting albums metadata...")
 
-    album_id = selalbums[i]["ALBUM_ID"]
-    album_title = selalbums[i]["TITLE"]
-    artist_name = selalbums[i]["ARTIST_NAME"]
 
-    try:
+    # ottenimento dell'elenco degli album locali ed iterazione per ottenere i metadati
+    selalbums = db.select("""
+                    SELECT al.ALBUM_ID, al.TITLE, ar.name as "ARTIST_NAME" 
+                    FROM albums as al 
+                    inner join artists as ar on al.artist_id = ar.artist_id;
+                """)
 
-        progress(i+1, len(selalbums))
+    for i in range(len(selalbums)):
 
-        req = urllib.request.urlopen(
-            "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&artist={0}&album={1}&api_key={2}&format=json".format(
-                artist_name.replace(" ","+"),
-                album_title.replace(" ","+"),
-                cfg.getApiKey()
-                ).encode('ascii', 'ignore').decode('ascii'))
+        album_id = selalbums[i]["ALBUM_ID"]
+        album_title = selalbums[i]["TITLE"]
+        artist_name = selalbums[i]["ARTIST_NAME"]
 
-        html = req.read()
-        json_data = json.loads(html)
-        
-        if "album" in json_data:
-            album_img = json_data["album"]["image"][3]["#text"]
-            db.execute(
-                "update albums set cover_url = ? where album_id = ?; ",
-                album_img, album_id
-            )
+        try:
 
-    except Exception as e:
-        pass
+            progress(i+1, len(selalbums))
 
-db.commit()
+            req = urllib.request.urlopen(
+                "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&artist={0}&album={1}&api_key={2}&format=json".format(
+                    artist_name.replace(" ","+"),
+                    album_title.replace(" ","+"),
+                    cfg.getApiKey()
+                    ).encode('ascii', 'ignore').decode('ascii'))
+
+            html = req.read()
+            json_data = json.loads(html)
+            
+            if "album" in json_data:
+                album_img = json_data["album"]["image"][3]["#text"]
+                db.execute(
+                    "update albums set cover_url = ? where album_id = ?; ",
+                    album_img, album_id
+                )
+
+        except Exception as e:
+            pass
+
+    db.commit()
 
 
 
@@ -285,10 +286,10 @@ db.commit()
 # 8. chiusura programma
 # ############################################################################
 
-print("\n* script ended in {} secs".format(round(time.time() - start_time,1)))
+print("* script ended in {} secs".format(round(time.time() - start_time,1)))
 print("* {} tracks found | {} errors detected".format(added, errors))
 
 # chiusura connessione
 db.close()
 
-input("press key to exit") 
+input("press key to exit")

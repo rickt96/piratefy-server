@@ -63,7 +63,7 @@ def execute(query):
     data = cur.fetchall()
     dbconn.close()
     return data """
-    db = Database(cfg.getdb())
+    db = Database(cfg.getDb())
     data = db.select(query)
     db.close()
     return data
@@ -72,7 +72,7 @@ def execute(query):
 
 # ritorno singolo valore
 def fetchone(query):
-    db = Database(cfg.getdb())
+    db = Database(cfg.getDb())
     value = db.fetchone(query)
     db.close()
     return value
@@ -281,5 +281,5 @@ if __name__ == "__main__":
     app.run(
         debug = True,
         host = "0.0.0.0",
-        port = int(cfg.getport())
+        port = int(cfg.getPort())
     )
