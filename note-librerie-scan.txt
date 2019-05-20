@@ -25,8 +25,3 @@ https://eyed3.readthedocs.io/en/latest/index.html
 $ pip install mutagen
 https://pypi.org/project/mutagen/
 https://mutagen.readthedocs.io/en/latest/user/index.html
-
-
-
-aggiungere tabella generi
-aggiungere capitalizazione album e artisti

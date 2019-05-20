@@ -1,13 +1,11 @@
 """
-
-# Descrizione:
+# Descrizione
 lo script permette di generare un database dai file aventi le estensioni specificate
 nelle directory selezionate (vedi il file config.json).
 essi vengono cercati ed inseriti nel database costruendo uno schema logico tra canzoni, artisti e album
 le informazioni non presenti nei metadati vengono completate tramite l'utilizzo delle webapi di last.fm
 
-
-# Funzionamento:
+# Funzionamento
 1. inizializzazione
 2. scansione cartelle e creazione canzoni grezze
 3. creazione artisti
@@ -16,41 +14,10 @@ le informazioni non presenti nei metadati vengono completate tramite l'utilizzo 
 6. ottenimento biografie e immagini (webapi lastfm)
 7. ottenimento cover (webapi lastfm)
 8. print dei risultati
-
-
-# Note:
-- sqlite3.connect() crea un file nuovo nel caso non esista quello specificato
-- nell'esecuzione della query posso specificare i parametri con il ?
-- per recuperare il percorso del file corrente usare os.path.dirname(os.path.abspath(__file__))]
-
-
-# Chiamate last.fm
-- ottenimento artista:      http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=ARTIST_NAME&api_key=YOUR_API_KEY&format=json
-- ottenimento album:        http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=YOUR_API_KEY&artist=ARTIST_NAME&album=ALBUM_NAME&format=json
-
-
-# Note chiamate
-- per le immagini utilizzo l'etichetta extralarge (indice 3)
-
-
-# Link utili:
-- errore pip pytaglib:      https://stackoverflow.com/questions/48511211/pip-installing-pytaglib-error
-- guida utilizzo sqlite3:   http://www.sqlitetutorial.net/sqlite-python/creating-database/
-                            https://docs.python.org/2/library/sqlite3.html
-- documentazione pytaglib:  https://pypi.org/project/pytaglib/1.4.1/
-- documentazione api last:  https://www.last.fm/api
-- rimozione spazi testo:    http://www.datasciencemadesimple.com/remove-spaces-in-python/
-- capitalizzazione testo:   https://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python
-- substring:                https://stackoverflow.com/questions/663171/is-there-a-way-to-substring-a-string
-- posizione di un char:     https://stackoverflow.com/questions/2294493/how-to-get-the-position-of-a-character-in-python
-
 """
 
 #-*- coding: utf-8 -*-
 
-import os
-import os.path
-import sys
 import time
 import string
 import datetime
@@ -58,9 +25,9 @@ import json
 import urllib.request
 import urllib.error
 import traceback
-from core import *
-
-
+from core import config
+from core import common
+from core import database
 
 
 
@@ -71,13 +38,13 @@ from core import *
 print("* initialization...")
 
 # configuration intialization
-cfg = Config(CONFIG_PATH)
+cfg = config.Config("config.json")
 
 # drop old db
-delete(cfg.getDb())
+common.delete(cfg.getDb())
 
-# apre la connessione al database indicato dal parametro (se il file non esiste lo crea)
-db = Database(cfg.getDb())
+# apertura connessione al database
+db = database.Database(cfg.getDb())
 
 # creazione schema ddl del database
 with open(cfg.getSchema()) as sh:
@@ -99,7 +66,7 @@ start_time = time.time()
 
 print("* start directories scanning...")
 
-songs = getFiles(cfg.getDirs())
+songs = common.getFiles(cfg.getDirs())
 
 print("* {} songs found".format(len(songs)))
 
@@ -107,7 +74,7 @@ print("* fetching track metadata")
 
 for song in songs:
     try:
-        res = getEyeD3Tags(song)
+        res = common.getEyeD3Tags(song)
         if not res["error"]:
             db.execute(
                 "INSERT INTO songs_raw VALUES(?,?,?,?,?,?,?);", 
@@ -139,9 +106,9 @@ print("* building artists list...")
 # inserimento distinct artisti
 # popola la tabella artisti cercando i vari nomi dalla tabella songs_raw
 db.execute("""
-insert into artists (name)
-select distinct artist
-from songs_raw;
+    insert into artists (name)
+    select distinct artist
+    from songs_raw;
 """)
 db.commit()
 
@@ -157,11 +124,11 @@ print("* building albums list...")
 # inserimento distinct degli album
 # popola la tabella degli album prendendo prendendo i valori dalla tabella delle songs_raw
 db.execute("""
-insert into albums (title, artist_id, year)
-select distinct album,
-	   (select a.artist_id from artists as a where a.name = sr.artist),
-	   (select ROUND(avg(year)) from songs_raw as sr2 where sr2.album = sr.album)
-from songs_raw as sr;
+    insert into albums (title, artist_id, year)
+    select distinct album,
+        (select a.artist_id from artists as a where a.name = sr.artist),
+        (select ROUND(avg(year)) from songs_raw as sr2 where sr2.album = sr.album)
+    from songs_raw as sr;
 """)
 db.commit()
 
@@ -177,13 +144,13 @@ print("* building songs list...")
 # inserimento canzoni clean
 # ottiene i valori delle canzoni leggendoli da songs_raw ed albums
 db.execute("""
-insert into songs(title, album_id, length, track_no, path)
-select  s.title,
-		(select alb.album_id from albums as alb where alb.title = s.album),
-		s.length,
-		s.track_no,
-		s.path
-from songs_raw as s;
+    insert into songs(title, album_id, length, track_no, path)
+    select  s.title,
+            (select alb.album_id from albums as alb where alb.title = s.album),
+            s.length,
+            s.track_no,
+            s.path
+    from songs_raw as s;
 """)
 db.commit()
 
@@ -206,7 +173,7 @@ if cfg.getFetchMetadata():
 
         try:
 
-            progress(i+1, len(selartists))
+            common.progress(i+1, len(selartists))
 
             req = urllib.request.urlopen(
                 "http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist={0}&api_key={1}&format=json".format(
@@ -255,7 +222,7 @@ if cfg.getFetchMetadata():
 
         try:
 
-            progress(i+1, len(selalbums))
+            common.progress(i+1, len(selalbums))
 
             req = urllib.request.urlopen(
                 "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&artist={0}&album={1}&api_key={2}&format=json".format(

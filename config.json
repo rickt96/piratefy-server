@@ -1,8 +1,8 @@
 {
-    "db_path": "test_no_meta.sqlite",
+    "db_path": "db\\test2.sqlite",
     "api_key" : "21dde19ce5f13edddc9e3fea33bddb78",
     "db_schema" : "structure.sql",
-    "dirs": [ "D:\\MUSICA\\" ],
+    "dirs": [ "D:\\MUSICA\\Korn\\" ],
     "fetch_metadata" : false,
     "last_scan" : "",
     "server_port" : 5000
