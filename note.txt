@@ -28,4 +28,5 @@ https://mutagen.readthedocs.io/en/latest/user/index.html
 
 
 
-da vedere perchè i tag restituiscono una tupla porca merda
+aggiungere tabella generi
+aggiungere capitalizazione album e artisti

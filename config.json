@@ -2,7 +2,7 @@
     "db_path": "test_no_meta.sqlite",
     "api_key" : "21dde19ce5f13edddc9e3fea33bddb78",
     "db_schema" : "structure.sql",
-    "dirs": [ "D:\\MUSICA\\Dope\\" ],
+    "dirs": [ "D:\\MUSICA\\" ],
     "fetch_metadata" : false,
     "last_scan" : "",
     "server_port" : 5000
