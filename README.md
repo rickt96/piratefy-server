@@ -55,28 +55,41 @@ host/api/albums/{id}
 	- http://www.sqlitetutorial.net/sqlite-python/creating-database/
 	- [sqlite3 python.org](https://docs.python.org/2/library/sqlite3.html)
 	- [SQLite objects created in a thread can only be used in that same thread](https://stackoverflow.com/questions/48218065/programmingerror-sqlite-objects-created-in-a-thread-can-only-be-used-in-that-sa)
+	- [get dict from sqlite query](https://stackoverflow.com/questions/3300464/how-can-i-get-dict-from-sqlite-query)
 
 - **documentazione api last fm** 
 	- [link api lastfm](https://www.last.fm/api)
 	- [creazione account api key](https://www.last.fm/join?next=/api/account/create)
 	- [endpoint info artista](http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=ARTIST_NAME&api_key=YOUR_API_KEY&format=json)
 	- [endpoint info album](http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=YOUR_API_KEY&artist=ARTIST_NAME&album=ALBUM_NAME&format=json)
+
 - **eyed3** 
 	- [pip installing eyed3 module failed to find libmagic](https://stackoverflow.com/questions/46518690/pip-installing-eyed3-module-failed-to-find-libmagic)
 	- [pagina ufficiale eyed3](https://eyed3.readthedocs.io/en/latest/index.html)
 	- [librerie per la scansione dei metadati mp3](http://www.blog.pythonlibrary.org/2010/04/22/parsing-id3-tags-from-mp3s-using-python/)
 	- [esempi utilizzo eyed3 - mutagen - id3](https://stackoverflow.com/questions/8948/accessing-mp3-meta-data-with-python)
+	- [esempi utilizzo eyed3](https://stackoverflow.com/questions/8948/accessing-mp3-meta-data-with-python)
+	- [github eyed3 sample to set mp3 tag](https://gist.github.com/sinewalker/c636025bfc4bf3cc3e9992f212a40afa)
+	- [sample utilizzo mutagen](https://www.programcreek.com/python/example/63675/mutagen.File)
+
 - **ricerca file directory / estensioni**
 	- [list all files in a directory](https://www.mkyong.com/python/python-how-to-list-all-files-in-a-directory/)
 	- [find all files in a directory with extension](https://stackoverflow.com/questions/3964681/find-all-files-in-a-directory-with-extension-txt-in-python/3964690)
 	- [check if string ends with one of the strings from a list](https://stackoverflow.com/questions/18351951/check-if-string-ends-with-one-of-the-strings-from-a-list)
+
 - **operazioni sulle stringhe**
 	- [remove spaces in string](http://www.datasciencemadesimple.com/remove-spaces-in-python/)
 	- [how to capitalize the first letter of each word](https://stackoverflow.com/questions/1549641/how-to-capitalize-the-first-letter-of-each-word-in-a-string-python)
 	- [how-to-substring-a-string](https://stackoverflow.com/questions/663171/how-to-substring-a-string-in-python)
 	- [how-to-get-the-position-of-a-character](https://stackoverflow.com/questions/2294493/how-to-get-the-position-of-a-character-in-python)
+	- [string encoding](https://www.programiz.com/python-programming/methods/built-in/str)
 
-
-
+- **flask/media**
+	- [the taste of media streaming with flask](https://codeburst.io/the-taste-of-media-streaming-with-flask-cdce35908a50)
+	- [how do i set response headers in flask](https://stackoverflow.com/questions/25860304/how-do-i-set-response-headers-in-flask)
+	- [video streaming with flask](https://blog.miguelgrinberg.com/post/video-streaming-with-flask)
+	- [partials content request](https://stackoverflow.com/questions/8088364/html5-video-will-not-loop)
+	- [flask stream file partial (snippet utilizzato)](https://gist.github.com/lizhiwei/7885684)
+	
 
 

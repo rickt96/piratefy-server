@@ -1,22 +1,24 @@
-"""
-# Descrizione
-lo script permette di generare un database dai file aventi le estensioni specificate
-nelle directory selezionate (vedi il file config.json).
-essi vengono cercati ed inseriti nel database costruendo uno schema logico tra canzoni, artisti e album
-le informazioni non presenti nei metadati vengono completate tramite l'utilizzo delle webapi di last.fm
 
-# Funzionamento
-1. inizializzazione
-2. scansione cartelle e creazione canzoni grezze
-3. creazione artisti
-4. creazione album
-5. creazione canzoni finali
-6. ottenimento biografie e immagini (webapi lastfm)
-7. ottenimento cover (webapi lastfm)
-8. print dei risultati
-"""
+# lo script si occupa di poplare il database che verrà poi utilizzato per fornire i dati al client
+# esso inizialmente ottiene dai percorsi specificati una lista di file mp3
+# sucessivamente questi vengono analizzati, i loro metadati estratti ed inseriti nel database sqlite
+# nel quale poi sucessivamente viene costruito lo schema logico realtivo a canzoni, artisti, album e generi
+# le informazioni non presenti nei metadati locali possono essere completate interrogando le api di last.fm
+# dilatando molto i tempi di esecuzione dello script.
+# questa componente al momento non è pienamente funzionante e presenta problemi con le immagini
+
+# 1. inizializzazione: creazione nuovo database ed istanza delle variabili
+# 2. scansione: vengono ottenute ed analizzate tutte le tracce mp3 ed i loro metadati inseriti in una prima tabella della songs_raw
+# 3. creazione artisti: popola la tabella artists tramite i dinstict ottenuti da songs_raw
+# 4. creazione albums: popola la tabella albums tramite i dinstinct da songs_raw ed aggiunge il riferimento all'artista
+# 5. creazione canzoni: una volta ottenuti albums ed artists crea le canzoni "clean" attivando le chiavi esterne opportune
+# 6. ottenimento metadati artisti: opzionalmente è possibile ottenere i metadati relativi alla biografia ed un'immagine degli artisti
+# 7. ottenimento metadati album: procedimento analogo a quanto visto sopra, ma ottiene soltanto la cover dell'album
+# 8. chiusura: finalizzazione operazione e log dei risultati
+
 
 #-*- coding: utf-8 -*-
+
 
 import time
 import string
@@ -25,9 +27,7 @@ import json
 import urllib.request
 import urllib.error
 import traceback
-from core import config
-from core import common
-from core import database
+from core import config, common, database, tags, CONFIG_PATH
 
 
 
@@ -38,7 +38,7 @@ from core import database
 print("* initialization...")
 
 # configuration intialization
-cfg = config.Config("config.json")
+cfg = config.Config(CONFIG_PATH)
 
 # drop old db
 common.delete(cfg.getDb())
@@ -74,16 +74,17 @@ print("* fetching track metadata")
 
 for song in songs:
     try:
-        res = common.getEyeD3Tags(song)
+        res = tags.getTags(song)
         if not res["error"]:
             db.execute(
-                "INSERT INTO songs_raw VALUES(?,?,?,?,?,?,?);", 
+                "INSERT INTO songs_raw VALUES(?,?,?,?,?,?,?,?);", 
                 res["tags"]["title"], 
                 res["tags"]["album"], 
                 res["tags"]["artist"],
                 res["tags"]["year"],
                 res["tags"]["length"],
                 res["tags"]["tracknum"],
+                res["tags"]["genre"],
                 song)
             added += 1
         else:
@@ -92,6 +93,22 @@ for song in songs:
     except Exception as ex:
         print("errore: ", str(ex))
         errors += 1
+db.commit()
+
+
+
+
+### TODO
+
+print("* building genres list...")
+
+# inserimento distinct generi
+# popola la tabella generi cercando i vari nomi dalla tabella songs_raw
+db.execute("""
+    insert into genres (name)
+    select distinct genre
+    from songs_raw;
+""")
 db.commit()
 
 
@@ -144,11 +161,12 @@ print("* building songs list...")
 # inserimento canzoni clean
 # ottiene i valori delle canzoni leggendoli da songs_raw ed albums
 db.execute("""
-    insert into songs(title, album_id, length, track_no, path)
+    insert into songs(title, album_id, length, track_no, genre_id, path)
     select  s.title,
             (select alb.album_id from albums as alb where alb.title = s.album),
             s.length,
             s.track_no,
+            (select gen.genre_id from genres as gen where gen.name = s.genre),
             s.path
     from songs_raw as s;
 """)

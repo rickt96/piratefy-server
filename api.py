@@ -1,11 +1,23 @@
+# questo script funge da server rest per il progetto
+# gira su modulo flask e gestisce gli endpoint per l'invio dei dati json dei media
+# restituisce dati relativi ad artisti, album, canzoni e generi
+# inoltre espone un endpoint per lo streaming delle tracce audio
+# quest'ultima parte inizialmente era più semplice e risultava funzionante su browser come edge e firefox
+# ma su chrome non era consentito il seek delle tracce, questo perchè 
+# il browser necessita che il server mandi in streaming il contenuto con supporto ai partial contents.
+# per adeguare quindi la funzione ho dovuto utilizzare una soluzione più complessa
+# da github https://gist.github.com/lizhiwei/7885684
+# vedere le reference sul file README nella categoria flask/media
+# parole di ricerca utilizzate: flask streaming chrome, flask mp3 streaming, chrome audio stream not seek
+
+
 import mimetypes
 import os
 import re
 import flask
 from flask import request, send_file, Response, Flask, abort
 from flask_cors import CORS
-from core import config
-from core import controllers
+from core import config, controllers, CONFIG_PATH
 
 
 # setup flask
@@ -13,9 +25,8 @@ app = Flask(__name__)
 CORS(app)
 
 # configurazione
-cfg = config.Config("config.json")
+cfg = config.Config(CONFIG_PATH)
 service_port = cfg.getPort()
-db_path = cfg.getDb()
 
 # api controllers
 songsController = controllers.SongsController()
@@ -71,7 +82,7 @@ def get_album(albumID):
 @app.route("/api/songs")
 def get_songs():
     data = songsController.getAll()
-    return flask.jsonify({"songs": data})
+    return flask.jsonify(data)
 
 
 @app.route("/api/songs/<int:songID>", methods=["GET"])
@@ -125,9 +136,9 @@ def after_request(response):
 
 
 
-# ****************************************************************************************
+# ##########################################################################################
 # AVVIO FLASK
-# ****************************************************************************************
+# ##########################################################################################
 
 if __name__ == "__main__":
     app.run(

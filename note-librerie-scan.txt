@@ -25,3 +25,9 @@ https://eyed3.readthedocs.io/en/latest/index.html
 $ pip install mutagen
 https://pypi.org/project/mutagen/
 https://mutagen.readthedocs.io/en/latest/user/index.html
+
+
+
+
+
+https://www.programmableweb.com/news/25-music-apis/2008/02/21

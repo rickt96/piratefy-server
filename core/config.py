@@ -1,5 +1,6 @@
 import json
 import os
+from . import CONFIG_PATH
 
 
 class Config:
@@ -39,3 +40,19 @@ class Config:
             if os.path.isdir(d):
                 dirs.append(d)
         return dirs
+    
+    def createConfig(self, config_path=CONFIG_PATH):
+        """TODO crea un file di configurazione vuoto"""
+        cfg = """
+        {
+            "db_path": "db\\db.sqlite",
+            "api_key" : "YOUR_API_KEY",
+            "db_schema" : "db\\structure.sql",
+            "dirs": [ ],
+            "fetch_metadata" : false,
+            "last_scan" : "",
+            "server_port" : 5000
+        }
+        """
+        with open(config_path, "w") as fh:
+            fh.write(cfg)

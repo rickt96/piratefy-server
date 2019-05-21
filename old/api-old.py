@@ -6,15 +6,7 @@
   di riprodurre la canzone
   originalmente c'era uno script più semplice
   ma per problemi di compatibilita con chrome ho dovuto usare questa solizione più complessa
-
-# Link utili:
-- script streaming partial:     https://gist.github.com/lizhiwei/7885684
-- partial contents request:     https://stackoverflow.com/questions/8088364/html5-video-will-not-loop
-- video streaming:              https://blog.miguelgrinberg.com/post/video-streaming-with-flask
-- return dict da query:         https://stackoverflow.com/questions/3300464/how-can-i-get-dict-from-sqlite-query
-- flask as media server:        https://codeburst.io/the-taste-of-media-streaming-with-flask-cdce35908a50
-                                https://stackoverflow.com/questions/25860304/how-do-i-set-response-headers-in-flask
-
+  
 # Keyword di ricerca utilizzate:
 - flask streaming chrome
 - flask mp3 streaming
