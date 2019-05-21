@@ -17,7 +17,7 @@ LASTFM_ARTIST_INFO = "http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&ar
 
 def getAlbumInfo(artist_name, album_title):
     """esegue la chiamata alle webapi di lastfm ed ottiene le informazioni dell'album"""
-    info = { "error": True, "cover": "", "summary": "", "date": "" }
+    cover = ""
     query = LASTFM_ALBUM_INFO.format(
         urllib.parse.quote_plus(artist_name),
         urllib.parse.quote_plus(album_title),
@@ -28,21 +28,20 @@ def getAlbumInfo(artist_name, album_title):
     json_data = json.loads(html)
     
     if "album" in json_data: #finire qui, alcuni album non hanno il tag wiki
-        info["cover"] = json_data["album"]["image"][3]["#text"]
-        info["date"] = json_data["album"]["wiki"]["published"]
-        info["summary"] = json_data["album"]["wiki"]["summary"]
-        info["error"] = False
-    
-    return info
+        cover = json_data["album"]["image"][3]["#text"]
+
+    return cover
 
 
 
 def getArtistInfo(artist_name):
     """esegue la chiamata alle webapi di lastfm ed ottiene le informazioni dell'artista"""
     info = { "image": "", "summary": "" }
-    query = LASTFM_ARTIST_INFO.format(artist_name, api_key)
-    url = urllib.parse.quote_plus(query)
-    req = urllib.request.urlopen(url)
+    query = LASTFM_ARTIST_INFO.format(
+        urllib.parse.quote_plus(artist_name),
+        api_key
+        )
+    req = urllib.request.urlopen(query)
     html = req.read()
     json_data = json.loads(html)
 

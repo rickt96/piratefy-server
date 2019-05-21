@@ -31,5 +31,6 @@ for t in titles:
     print(cleanArtist(t)) """
 
 
-print(lastfm.getAlbumInfo("Lenny Kravitz", "Mama Said"))
+print(lastfm.getAlbumInfo("Korn", "follow the leader"))
+print(lastfm.getArtistInfo("primer 55"))
 
