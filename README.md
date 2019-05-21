@@ -1,8 +1,8 @@
 # PIRATEFY-SERVER
-rest api del progetto piratefy.
-sono scritte in python e girano sul modulo flask, queste forniscono gli endpoint per la visualizzazione di canzoni, artisti, album e per lo streaming audio.
-il progetto prevede la creazione di un database sqlite contenente le canzoni rilevate dallo scanner, che saranno poi fornite tramite gli endopoint del server.
-lo scanner in questione è in grado di leggere ed interagire soltanto con i file audio .mp3
+repository del backend per il progetto piratefy.
+le api tramite il modulo flask forniscono gli endpoint per la visualizzazione di canzoni, artisti, album, generi e per lo streaming audio.
+il progetto prevede la creazione di un database sqlite locale contenente le canzoni rilevate dallo scanner, che saranno poi fornite tramite gli endopoint del server.
+lo scanner in questione è in grado di leggere ed interagire ìcon i file audio .mp3
 
 ## Overview file di configurazione
 Questo file gestisce i parametri dello scanner e delle api.
