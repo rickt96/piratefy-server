@@ -46,7 +46,7 @@ def getArtistInfo(artist_name):
     json_data = json.loads(html)
 
     if "artist" in json_data:
-        info["summary"] = json_data["artist"]["bio"]["summary"]
+        info["summary"] = json_data["artist"]["bio"]["content"]
         info["image"] = json_data["artist"]["image"][3]["#text"]
 
     return info

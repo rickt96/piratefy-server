@@ -27,7 +27,7 @@ import json
 import urllib.request
 import urllib.error
 import traceback
-from core import config, common, database, tags, CONFIG_PATH
+from core import config, common, database, tags, lastfm, CONFIG_PATH
 
 
 
@@ -174,56 +174,37 @@ db.commit()
 
 
 
-if cfg.getFetchMetadata():
 
-    # ############################################################################
-    # 6. ottenimento metadati biografia/immagine artisti lastfm [RICHIESTA CONNESSIONE]
-    # ############################################################################
+# ############################################################################
+# 6. ottenimento metadati biografia/immagine artisti lastfm [RICHIESTA CONNESSIONE]
+# ############################################################################
+if cfg.fetchArtistsInfo():
 
     print("* getting artists metadata...")
 
     selartists = db.select("SELECT * FROM artists;")
 
     for i in range(len(selartists)):
-
         artist_name = selartists[i]["NAME"]
         artist_id = selartists[i]["ARTIST_ID"]
-
         try:
-
             common.progress(i+1, len(selartists))
-
-            req = urllib.request.urlopen(
-                "http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist={0}&api_key={1}&format=json".format(
-                    artist_name.replace(" ","+"), 
-                    cfg.getApiKey()
-                    ).encode('ascii', 'ignore').decode('ascii'))
-
-            html = req.read()
-            json_data = json.loads(html)
-
-            if "artist" in json_data:
-                artist_bio = json_data["artist"]["bio"]["summary"]
-                artist_img = json_data["artist"]["image"][3]["#text"]
-                db.execute(
-                    "update artists set biography = ?, image_url = ? where artist_id = ?; ",
-                    artist_bio, artist_img, artist_id
-                )    
-
+            info = lastfm.getArtistInfo(artist_name)
+            db.execute("update artists set biography = ?, image_url = ? where artist_id = ?; ", info["summary"], info["image"], artist_id)
         except Exception as e:
-            pass
+            print("* fetch artist info error: {}".format(str(e)))
 
     db.commit()
 
 
 
 
-    # ############################################################################
-    # 7. ottenimento copertine album lastfm [RICHIESTA CONNESSIONE]
-    # ############################################################################
+# ############################################################################
+# 7. ottenimento copertine album lastfm [RICHIESTA CONNESSIONE]
+# ############################################################################
+if cfg.fetchAlbumsInfo():
 
     print("\n* getting albums metadata...")
-
 
     # ottenimento dell'elenco degli album locali ed iterazione per ottenere i metadati
     selalbums = db.select("""
@@ -233,34 +214,16 @@ if cfg.getFetchMetadata():
                 """)
 
     for i in range(len(selalbums)):
-
         album_id = selalbums[i]["ALBUM_ID"]
         album_title = selalbums[i]["TITLE"]
         artist_name = selalbums[i]["ARTIST_NAME"]
-
         try:
-
             common.progress(i+1, len(selalbums))
-
-            req = urllib.request.urlopen(
-                "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&artist={0}&album={1}&api_key={2}&format=json".format(
-                    artist_name.replace(" ","+"),
-                    album_title.replace(" ","+"),
-                    cfg.getApiKey()
-                    ).encode('ascii', 'ignore').decode('ascii'))
-
-            html = req.read()
-            json_data = json.loads(html)
-            
-            if "album" in json_data:
-                album_img = json_data["album"]["image"][3]["#text"]
-                db.execute(
-                    "update albums set cover_url = ? where album_id = ?; ",
-                    album_img, album_id
-                )
-
+            cover = lastfm.getAlbumInfo(artist_name, album_title)
+            if cover != "":
+                db.execute("update albums set cover_url = ? where album_id = ?; ",cover, album_id)
         except Exception as e:
-            pass
+            print("* fetch album info error: {}".format(str(e)))
 
     db.commit()
 

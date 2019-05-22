@@ -29,8 +29,11 @@ class Config:
     def getSchema(self):
         return self.cfg["db_schema"]
 
-    def getFetchMetadata(self):
-        return self.cfg["fetch_metadata"]
+    def fetchArtistsInfo(self):
+        return self.cfg["fetch_artists_info"]
+
+    def fetchAlbumsInfo(self):
+        return self.cfg["fetch_albums_info"]
 
     def getDirs(self):
         '''return valid directories from config'''
