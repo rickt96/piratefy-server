@@ -4,10 +4,9 @@ le api tramite il modulo flask forniscono gli endpoint per la visualizzazione di
 il progetto prevede la creazione di un database sqlite locale contenente le canzoni rilevate dallo scanner, che saranno poi fornite tramite gli endopoint del server.
 lo scanner in questione è in grado di leggere ed interagire ìcon i file audio .mp3
 
-## Overview file di configurazione
+## Overview file di config.json
 Questo file gestisce i parametri dello scanner e delle api.
 E' necessario impostarlo correttamente prima di avviare gli script
- **config.json**:
 - **db_path:** percorso del database sqllite
 - **api_key:** api key per last.fm
 - **db_schema:** percorso del file contente lo schema logico del database
@@ -21,19 +20,18 @@ per la creazione di una api key nuova di last.fm seguire questo link https://www
 
 
 ## Configurazione ambiente di sviluppo
-E' necessario installare Python 3 da qui https://www.python.org/downloads/
-poi occorre installare le librerie **eyed3**,  **flask** e **flask_cors**
+Installare Python 3 da [qui](https://www.python.org/downloads/).
+Installare i moduli **eyed3**,  **flask** e **flask_cors**
 ```sh
 $ pip install eyed3
 $ pip install python-magic-bin==0.4.14
 $ pip install flask
 $ pip install flask_cors
 ```
-#### Note:
-- lanciare il comando pip da console con i permessi di amministratore
+Lanciare il comando pip install con i permessi di amministratore.
 
 
-## workflow
+## workflow avvio server
 Seguire queste operazioni per la configurazione iniziale:
  - modificare il file **config.json** come oppurtuno (vedi la sezione dedicata al file sopra)
  - avviare il file **scanner.py**
@@ -66,11 +64,15 @@ host/api/albums/{id}
 - **eyed3** 
 	- [pip installing eyed3 module failed to find libmagic](https://stackoverflow.com/questions/46518690/pip-installing-eyed3-module-failed-to-find-libmagic)
 	- [pagina ufficiale eyed3](https://eyed3.readthedocs.io/en/latest/index.html)
-	- [librerie per la scansione dei metadati mp3](http://www.blog.pythonlibrary.org/2010/04/22/parsing-id3-tags-from-mp3s-using-python/)
-	- [esempi utilizzo eyed3 - mutagen - id3](https://stackoverflow.com/questions/8948/accessing-mp3-meta-data-with-python)
 	- [esempi utilizzo eyed3](https://stackoverflow.com/questions/8948/accessing-mp3-meta-data-with-python)
 	- [github eyed3 sample to set mp3 tag](https://gist.github.com/sinewalker/c636025bfc4bf3cc3e9992f212a40afa)
+
+- **librerie tag id3**
+	- [mp3-tagger](https://pypi.org/project/mp3-tagger/)
+	- [mutagen](https://pypi.org/project/mutagen/)
+	- [librerie possibili](http://www.blog.pythonlibrary.org/2010/04/22/parsing-id3-tags-from-mp3s-using-python/)
 	- [sample utilizzo mutagen](https://www.programcreek.com/python/example/63675/mutagen.File)
+	- [esempi utilizzo eyed3-mutagen-id3](https://stackoverflow.com/questions/8948/accessing-mp3-meta-data-with-python)
 
 - **ricerca file directory / estensioni**
 	- [list all files in a directory](https://www.mkyong.com/python/python-how-to-list-all-files-in-a-directory/)

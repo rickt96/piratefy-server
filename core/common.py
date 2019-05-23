@@ -2,13 +2,13 @@ import sys
 import os
 
 
-# stampa a schermo una progressione del tipo 10/50 analizzati
+
 def progress(current, total):
     """stampa a schermo una progressione"""
     sys.stdout.write("\r  %d/%d analyzed" % (current, total))
     sys.stdout.flush()
 
-    if current == total: # quando la progress finisce stampa un writeline nuovo
+    if current == total: # manda a capo alla fine della progressione
         sys.stdout.write('\n')
 
 
@@ -37,7 +37,7 @@ def getFiles(directories=[], extensions=[".mp3"]):
     for directory in directories:           # r=root, d=directories, f=files
         for r, d, f in os.walk(directory):
             for file in f:
-                if file.endswith(tuple(extensions)): # tuple(extensions)
+                if file.endswith(tuple(extensions)):
                     files.append(os.path.join(r, file))
     return files
 
