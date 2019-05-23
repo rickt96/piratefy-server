@@ -19,7 +19,7 @@
 
 #-*- coding: utf-8 -*-
 
-
+import os
 import time
 import string
 import datetime
@@ -43,10 +43,11 @@ cfg = config.Config(CONFIG_PATH)
 # drop old db
 common.delete(cfg.getDb())
 
-# apertura connessione al database
+# istanza db
 db = database.Database(cfg.getDb())
+db.open()
 
-# creazione schema ddl del database
+# inizializzazione e caricamento schema logico
 with open(cfg.getSchema()) as sh:
     ddl = sh.read()
 db.executeScript(ddl)

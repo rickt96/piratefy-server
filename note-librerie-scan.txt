@@ -31,3 +31,8 @@ https://mutagen.readthedocs.io/en/latest/user/index.html
 
 
 https://www.programmableweb.com/news/25-music-apis/2008/02/21
+
+
+
+implementare pagination nei controllers (vedi scipt vecchio)
+ottimizzare numero di connessioni al db

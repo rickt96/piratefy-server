@@ -2,8 +2,19 @@ from . import database
 from . import config
 from . import CONFIG_PATH
 
+
+LIMIT = 15
+PAGE = 0
+
+
 cfg = config.Config(CONFIG_PATH)
 db_conn = database.Database(cfg.getDb())
+db_conn.open()
+
+
+def paginate(limit=20, page=0):
+    offset = limit * page
+    return " LIMIT {} OFFSET {} ".format(limit, offset)
 
 
 #
@@ -13,12 +24,9 @@ class SongsController:
     
     fields = "s.SONG_ID, s.TITLE, s.ALBUM_ID, s.LENGTH, s.TRACK_NO"
 
-    def __init__(self):
-        pass
-
-    def getAll(self):
+    def getAll(self, limit=15, page=0):
         '''restituisce tutte le canzoni'''
-        q = "SELECT {} FROM SONGS as s".format(self.fields)
+        q = "SELECT {} FROM SONGS as s {}".format(self.fields, paginate(limit, page))
         data = db_conn.select(q)
         return data
 
@@ -33,7 +41,8 @@ class SongsController:
         q = """select {}
                FROM SONGS as s
                INNER JOIN ALBUMS AS a ON s.ALBUM_ID = a.ALBUM_ID
-               WHERE a.ARTIST_ID = {}""".format(self.fields, artist_id)
+               WHERE a.ARTIST_ID = {}
+               """.format(self.fields, artist_id)
         data = db_conn.select(q)
         return data
 
@@ -64,13 +73,9 @@ class SongsController:
 #
 class AlbumsController:
 
-    def __init__(self):
-        #self.db = db
-        pass
-
-    def getAll(self):
+    def getAll(self, limit=15, page=0):
         '''restituisce tutti gli album'''
-        q = "SELECT * FROM ALBUMS"
+        q = "SELECT * FROM ALBUMS "+paginate(limit, page)
         data = db_conn.select(q)
         return data
     
@@ -92,10 +97,6 @@ class AlbumsController:
 # controller artisti
 #
 class ArtistsController:
-
-    def __init__(self):
-        #self.db = db
-        pass
 
     def getAll(self):
         '''restituisce tutti gli artisti'''

@@ -1,5 +1,5 @@
 {
-    "db_path": "db\\test_korn.sqlite",
+    "db_path": "db\\test_0523.sqlite",
     "api_key" : "21dde19ce5f13edddc9e3fea33bddb78",
     "db_schema" : "db\\structure.sql",
     "dirs": [ "D:\\MUSICA\\Korn\\" ],

@@ -4,12 +4,15 @@ import os
 
 # stampa a schermo una progressione del tipo 10/50 analizzati
 def progress(current, total):
-    '''stampa a schermo una progress bar'''
+    """stampa a schermo una progressione"""
     sys.stdout.write("\r  %d/%d analyzed" % (current, total))
     sys.stdout.flush()
 
+    if current == total: # quando la progress finisce stampa un writeline nuovo
+        sys.stdout.write('\n')
 
-# cancella un file specifico
+
+
 def delete(file_path):
     '''elimina un file'''
     try:
@@ -22,14 +25,56 @@ def delete(file_path):
 
 
 
+def getFiles(directories=[], extensions=[".mp3"]):
+    """ottiene tutti i file nelle cartelle e sottocartelle con l'estensione specificata
+    
+    "directories" è la lista di cartelle da scansionare ricorsivamente
+    "extensions" è la lista di estensioni da cercare, di default accetta solo .mp3
 
-
-# restituisce tutti i files mp3 nelle directory indicate
-def getFiles(directories=[]):
+    restituisce un'array di files
+    """
     files = []
     for directory in directories:           # r=root, d=directories, f=files
         for r, d, f in os.walk(directory):
             for file in f:
-                if file.endswith('.mp3'): # tuple(extensions)
+                if file.endswith(tuple(extensions)): # tuple(extensions)
                     files.append(os.path.join(r, file))
     return files
+
+
+
+def prompt(question, default="yes"):
+    """Ask a yes/no question via input() and return their answer.
+
+    "question" is a string that is presented to the user.
+    "default" is the presumed answer if the user just hits <Enter>.
+        It must be "yes" (the default), "no" or None (meaning
+        an answer is required of the user).
+
+    The "answer" return value is True for "yes" or False for "no".
+
+    https://stackoverflow.com/questions/3041986/apt-command-line-interface-like-yes-no-input
+    """
+    valid = {
+        "yes": True, "y": True, "si": True, "s":True,
+        "no": False, "n": False
+        }
+    if default is None:
+        prompt = " [y/n] "
+    elif default == "yes":
+        prompt = " [Y/n] "
+    elif default == "no":
+        prompt = " [y/N] "
+    else:
+        raise ValueError("invalid default answer: '%s'" % default)
+
+    while True:
+        sys.stdout.write(question + prompt)
+        choice = input().lower()
+        if default is not None and choice == '':
+            return valid[default]
+        elif choice in valid:
+            return valid[choice]
+        else:
+            sys.stdout.write("Please respond with 'yes' or 'no' "
+                             "(or 'y' or 'n').\n")
