@@ -34,7 +34,7 @@ artistsController = controllers.ArtistsController()
 albumsController = controllers.AlbumsController()
 
 
-
+## TODO inserire gestione pagination, vedi local-music-repo su git
 
 # ###########################################################################################
 # API ARTISTS

@@ -1,5 +1,6 @@
 # Database
 # classe di gestione della connessione al db sqlite
+# [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]
 
 import os
 import sqlite3
