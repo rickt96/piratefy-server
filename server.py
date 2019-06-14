@@ -34,7 +34,6 @@ artistsController = controllers.ArtistsController()
 albumsController = controllers.AlbumsController()
 
 
-## TODO inserire gestione pagination, vedi local-music-repo su git
 
 # ###########################################################################################
 # API ARTISTS
@@ -43,7 +42,9 @@ albumsController = controllers.AlbumsController()
 
 @app.route("/api/artists", methods=["GET"])
 def get_artists():
-    data = artistsController.getAll()
+    page = int(request.args.get('page', 0))
+    limit = int(request.args.get('limit', 15))
+    data = artistsController.getAll(limit, page)
     return flask.jsonify(data)
 
 
@@ -62,7 +63,9 @@ def get_artist(artistID):
 
 @app.route("/api/albums", methods=["GET"])
 def get_albums():
-    data = albumsController.getAll()
+    page = int(request.args.get('page', 0))
+    limit = int(request.args.get('limit', 15))
+    data = albumsController.getAll(limit, page)
     return flask.jsonify(data)
 
 
@@ -79,9 +82,11 @@ def get_album(albumID):
 # ##########################################################################################
 
 
-@app.route("/api/songs")
+@app.route("/api/songs", methods=["GET"])
 def get_songs():
-    data = songsController.getAll()
+    page = int(request.args.get('page', 0))
+    limit = int(request.args.get('limit', 15))
+    data = songsController.getAll(limit, page)
     return flask.jsonify(data)
 
 

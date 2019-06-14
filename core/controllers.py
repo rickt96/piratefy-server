@@ -12,8 +12,9 @@ db_conn = database.Database(cfg.getDb())
 db_conn.open()
 
 
-def paginate(limit=20, page=0):
+def paginate(limit, page):
     offset = limit * page
+    #print(" LIMIT {} OFFSET {} ".format(limit, offset))
     return " LIMIT {} OFFSET {} ".format(limit, offset)
 
 
@@ -24,7 +25,7 @@ class SongsController:
     
     fields = "s.SONG_ID, s.TITLE, s.ALBUM_ID, s.LENGTH, s.TRACK_NO"
 
-    def getAll(self, limit=15, page=0):
+    def getAll(self, limit=LIMIT, page=0):
         '''restituisce tutte le canzoni'''
         q = "SELECT {} FROM SONGS as s {}".format(self.fields, paginate(limit, page))
         data = db_conn.select(q)
@@ -73,9 +74,9 @@ class SongsController:
 #
 class AlbumsController:
 
-    def getAll(self, limit=15, page=0):
+    def getAll(self, limit=LIMIT, page=0):
         '''restituisce tutti gli album'''
-        q = "SELECT * FROM ALBUMS "+paginate(limit, page)
+        q = "SELECT * FROM ALBUMS"+paginate(limit, page)
         data = db_conn.select(q)
         return data
     
@@ -98,9 +99,9 @@ class AlbumsController:
 #
 class ArtistsController:
 
-    def getAll(self):
+    def getAll(self, limit=LIMIT, page=0):
         '''restituisce tutti gli artisti'''
-        q = "SELECT * FROM ARTISTS"
+        q = "SELECT * FROM ARTISTS"+paginate(limit, page)
         data = db_conn.select(q)
         return data
     
