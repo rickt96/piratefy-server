@@ -15,6 +15,8 @@ redirect_uri = 'http://localhost:8080/callback'
 scope = 'user-read-private user-read-playback-state user-modify-playback-state'
 token = None
 
+# url encode
+# https://www.urlencoder.io/python/
 
 
 def getToken():
@@ -38,4 +40,5 @@ def getArtistInfo(artistName=''):
 
 def getAlbumInfo(albumName):
     info = { "cover":'', "spotify_id":'', "name":'', "year": 0 }
+    #TODO esiste l'endpoit per cercarel'album dell'artista ma no funziona
     pass

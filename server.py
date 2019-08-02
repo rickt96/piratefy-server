@@ -22,7 +22,7 @@ from core import config, controllers, CONFIG_PATH
 
 # setup flask
 app = Flask(__name__)
-CORS(app)
+CORS(app) #cors = CORS(app, resources={r"*": {"origins": "*"}})
 
 # configurazione
 cfg = config.Config(CONFIG_PATH)
@@ -137,6 +137,10 @@ def play_partial(songID):
 def after_request(response):
     response.headers.add('Accept-Ranges', 'bytes')
     return response
+"""     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    response.headers.add('Access-Control-Allow-Origin', '*') """
+    
 
 
 

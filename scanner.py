@@ -17,6 +17,14 @@
 # 8. chiusura: finalizzazione operazione e log dei risultati
 
 
+# TODO
+# nuovo flusso creazione libreria:
+# ottenimento canzoni grezze
+# memorizzazione su json locale (non più db)
+# distinct generi
+# distinct artists (info da spotify)
+# album
+
 #-*- coding: utf-8 -*-
 
 import os
