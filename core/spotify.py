@@ -1,44 +1,36 @@
-import os
-import sys
-import json
+# implementazione libreria spotipy per l'ottenimento dei metadati di album e artisti da spotify
+# api reference https://developer.spotify.com/documentation/web-api/reference/search/search/
+# https://www.urlencoder.io/python/
+
 import spotipy
-import spotipy.util as util
-from json.decoder import JSONDecodeError
+import spotipy.oauth2 as oauth2
 
-
-# parametri ruqest api
-base_url = 'https://api.spotify.com/v1/'
 client_id = '0385111ec7b4489d8f14a5043fc2a9da' #os.environ['SPOTIPY_CLIENT_ID']
 client_secret = 'bdab4e32063f4404a362c08146533173' #os.environ['SPOTIPY_CLIENT_SECRET']
-username = '21sbnltyv77x7qh3di767nsoy'
-redirect_uri = 'http://localhost:8080/callback'
-scope = 'user-read-private user-read-playback-state user-modify-playback-state'
 token = None
 
-# url encode
-# https://www.urlencoder.io/python/
 
 
 def getToken():
-    try:
-        token = util.prompt_for_user_token(username, scope, client_id, client_secret, redirect_uri)
-    except (AttributeError, JSONDecodeError):
-        os.remove(f".cache-{username}")
-        token = util.prompt_for_user_token(username, scope, client_id, client_secret, redirect_uri)
+    global token
+    if token is None:
+        credentials = oauth2.SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
+        token = credentials.get_access_token()
+
 
 
 def getArtistInfo(artistName=''):
+    getToken()
     result = {
         "status" : False,
         "message" : "",
         "info" : { "image":'', "spotify_id":'', "name":'' }
     }
-    #info = { "image":'', "spotify_id":'', "name":'' }
-    spotifyObject = spotipy.Spotify(auth=token)
-    searchResult = spotifyObject.search(artistName,1,0,"artist")
+    sp = spotipy.Spotify(auth=token)
+    searchResult = sp.search(q=artistName, limit=1, offset=0, type="artist")
     if len(searchResult['artists']['items']) > 0:
         result["status"] = True
-        result["info"]['image'] = searchResult['artists']['items'][0]['images'][1]
+        result["info"]['image'] = searchResult['artists']['items'][0]['images'][1]["url"]
         result["info"]['spotify_id'] = searchResult['artists']['items'][0]['id']
         result["info"]['name'] = searchResult['artists']['items'][0]['name']
     else:
@@ -47,7 +39,22 @@ def getArtistInfo(artistName=''):
     return result
 
 
-def getAlbumInfo(albumName):
-    info = { "cover":'', "spotify_id":'', "name":'', "year": 0 }
-    #TODO esiste l'endpoit per cercarel'album dell'artista ma no funziona
-    pass
+
+def getAlbumInfo(albumName="", artistName=""):
+    getToken()
+    result = {
+        "status" : False,
+        "message" : "",
+        "info" : { "image":'', "spotify_id":'', "date":'' }
+    }
+    sp = spotipy.Spotify(auth=token)
+    searchResult = sp.search(q="album:"+albumName+" artist:"+artistName, limit=1, offset=0, type="album")
+    if len(searchResult['albums']['items']) > 0:
+        result["status"] = True
+        result["info"]['image'] = searchResult['albums']['items'][0]['images'][1]["url"]
+        result["info"]["date"] = searchResult['albums']['items'][0]["release_date"]
+        result["info"]["spotify_id"] = searchResult['albums']['items'][0]["id"]
+    else:
+        result["status"] = False
+        result["message"] = "no info provided for "+albumName
+    return result

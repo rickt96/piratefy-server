@@ -1,5 +1,6 @@
 
-# lo script si occupa di poplare il database che verrà poi utilizzato per fornire i dati al client
+# song_scanner
+# lo script si occupa di popolare il database con tutte le canzoni
 # esso inizialmente ottiene dai percorsi specificati una lista di file mp3
 # sucessivamente questi vengono analizzati, i loro metadati estratti ed inseriti nel database sqlite
 # nel quale poi sucessivamente viene costruito lo schema logico realtivo a canzoni, artisti, album e generi
@@ -16,15 +17,6 @@
 # 7. ottenimento metadati album: procedimento analogo a quanto visto sopra, ma ottiene soltanto la cover dell'album
 # 8. chiusura: finalizzazione operazione e log dei risultati
 
-
-# TODO
-# nuovo flusso creazione libreria:
-# ottenimento canzoni grezze
-# memorizzazione su json locale (non più db)
-# distinct generi
-# distinct artists (info da spotify)
-# album
-
 #-*- coding: utf-8 -*-
 
 import os
@@ -36,9 +28,6 @@ import urllib.request
 import urllib.error
 import traceback
 from core import config, common, database, tags, lastfm, spotify, CONFIG_PATH
-
-
-spotify.getToken()
 
 
 # ############################################################################
@@ -109,22 +98,6 @@ db.commit()
 
 
 
-### TODO
-
-print("* building genres list...")
-
-# inserimento distinct generi
-# popola la tabella generi cercando i vari nomi dalla tabella songs_raw
-db.execute("""
-    insert into genres (name)
-    select distinct genre
-    from songs_raw;
-""")
-db.commit()
-
-
-
-
 # ############################################################################
 # 3. ottenimento artisti
 # ############################################################################
@@ -182,68 +155,6 @@ db.execute("""
     from songs_raw as s;
 """)
 db.commit()
-
-
-
-
-# ############################################################################
-# 6. ottenimento metadati biografia/immagine artisti lastfm [RICHIESTA CONNESSIONE]
-# ############################################################################
-if cfg.fetchArtistsInfo():
-
-    print("* getting artists metadata...")
-
-    selartists = db.select("SELECT * FROM artists;")
-
-    for i in range(len(selartists)):
-        artist_name = selartists[i]["NAME"]
-        artist_id = selartists[i]["ARTIST_ID"]
-        try:
-            common.progress(i+1, len(selartists))
-            result = spotify.getArtistInfo(artist_name)
-            if result["status"]:
-                db.execute("update artists set image_url = ?, spotify_id = ?, name = ? where artist_id = ?; ", 
-                    result["info"]["image"], 
-                    result["info"]["spotify_id"], 
-                    result["info"]["name"], 
-                    artist_id)
-            else:
-                print("* {}".format(result["message"]))
-        except Exception as e:
-            print("* fetch artist info error: {}".format(str(e)))
-
-    db.commit()
-
-
-
-
-# ############################################################################
-# 7. ottenimento copertine album lastfm [RICHIESTA CONNESSIONE]
-# ############################################################################
-if cfg.fetchAlbumsInfo():
-
-    print("\n* getting albums metadata...")
-
-    # ottenimento dell'elenco degli album locali ed iterazione per ottenere i metadati
-    selalbums = db.select("""
-                    SELECT al.ALBUM_ID, al.TITLE, ar.name as "ARTIST_NAME" 
-                    FROM albums as al 
-                    inner join artists as ar on al.artist_id = ar.artist_id;
-                """)
-
-    for i in range(len(selalbums)):
-        album_id = selalbums[i]["ALBUM_ID"]
-        album_title = selalbums[i]["TITLE"]
-        artist_name = selalbums[i]["ARTIST_NAME"]
-        try:
-            common.progress(i+1, len(selalbums))
-            cover = lastfm.getAlbumInfo(artist_name, album_title)
-            if cover != "":
-                db.execute("update albums set cover_url = ? where album_id = ?; ",cover, album_id)
-        except Exception as e:
-            print("* fetch album info error: {}".format(str(e)))
-
-    db.commit()
 
 
 
