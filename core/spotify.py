@@ -28,14 +28,23 @@ def getToken():
 
 
 def getArtistInfo(artistName=''):
-    info = { "image":'', "spotify_id":'', "name":'' }
+    result = {
+        "status" : False,
+        "message" : "",
+        "info" : { "image":'', "spotify_id":'', "name":'' }
+    }
+    #info = { "image":'', "spotify_id":'', "name":'' }
     spotifyObject = spotipy.Spotify(auth=token)
     searchResult = spotifyObject.search(artistName,1,0,"artist")
     if len(searchResult['artists']['items']) > 0:
-        info['image'] = searchResult['artists']['items'][0]['images'][1]
-        info['spotify_id'] = searchResult['artists']['items'][0]['id']
-        info['name'] = searchResult['artists']['items'][0]['name']
-    return info
+        result["status"] = True
+        result["info"]['image'] = searchResult['artists']['items'][0]['images'][1]
+        result["info"]['spotify_id'] = searchResult['artists']['items'][0]['id']
+        result["info"]['name'] = searchResult['artists']['items'][0]['name']
+    else:
+        result["status"] = False
+        result["message"] = "no info provided for "+artistName
+    return result
 
 
 def getAlbumInfo(albumName):

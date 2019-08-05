@@ -35,8 +35,10 @@ import json
 import urllib.request
 import urllib.error
 import traceback
-from core import config, common, database, tags, lastfm, CONFIG_PATH
+from core import config, common, database, tags, lastfm, spotify, CONFIG_PATH
 
+
+spotify.getToken()
 
 
 # ############################################################################
@@ -198,8 +200,15 @@ if cfg.fetchArtistsInfo():
         artist_id = selartists[i]["ARTIST_ID"]
         try:
             common.progress(i+1, len(selartists))
-            info = lastfm.getArtistInfo(artist_name)
-            db.execute("update artists set biography = ?, image_url = ? where artist_id = ?; ", info["summary"], info["image"], artist_id)
+            result = spotify.getArtistInfo(artist_name)
+            if result["status"]:
+                db.execute("update artists set image_url = ?, spotify_id = ?, name = ? where artist_id = ?; ", 
+                    result["info"]["image"], 
+                    result["info"]["spotify_id"], 
+                    result["info"]["name"], 
+                    artist_id)
+            else:
+                print("* {}".format(result["message"]))
         except Exception as e:
             print("* fetch artist info error: {}".format(str(e)))
 
