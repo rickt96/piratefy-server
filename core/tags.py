@@ -19,6 +19,7 @@ def setTags(path, title='', artist='', album='', track=0, genre='', year=0 ):
 
 def getTags(path):
     """restituisce i tag del file mp3"""
+    # https://stackoverflow.com/questions/51566381/attributeerror-nonetype-object-has-no-attribute-tag-using-eyed3
     result = {
         "error" : True,
         "message" : "",
@@ -26,20 +27,24 @@ def getTags(path):
     }
     try:
         audiofile = eyed3.load(path) # possibile errore nel caricamento
-        title = "unknown title" if audiofile.tag.title is None else audiofile.tag.title     # ridondanza di codice, ma se dichiaro tutto nel dizionario legge come tuple
-        artist = "unknown artist" if audiofile.tag.artist is None else audiofile.tag.artist
-        album = "unknown album" if audiofile.tag.album is None else audiofile.tag.album
-        tracknum = 0 if audiofile.tag.track_num[0] is None else audiofile.tag.track_num[0]
-        year = 0 if audiofile.tag.getBestDate() is None else audiofile.tag.getBestDate().year
-        genre = "unknown genre" if audiofile.tag.genre is None else audiofile.tag.genre.name    # per info sulle proprietà studiare la libreria, si trova in Python\Lib\site-packege\eyed3
-        result["tags"]["title"] = title.title()
-        result["tags"]["artist"] = sanitizeArtist(artist).title()
-        result["tags"]["album"] = album.title()
-        result["tags"]["tracknum"] = tracknum
-        result["tags"]["year"] = year
-        result["tags"]["length"] = round(audiofile.info.time_secs)
-        result["tags"]["genre"] = genre.title()
-        result["error"] = False
+        if audiofile:
+            title = "" if audiofile.tag.title is None else audiofile.tag.title     # ridondanza di codice, ma se dichiaro tutto nel dizionario legge come tuple
+            artist = "" if audiofile.tag.artist is None else audiofile.tag.artist
+            album = "" if audiofile.tag.album is None else audiofile.tag.album
+            tracknum = 0 if audiofile.tag.track_num[0] is None else audiofile.tag.track_num[0]
+            year = "" if audiofile.tag.getBestDate() is None else audiofile.tag.getBestDate().year
+            genre = "" if audiofile.tag.genre is None else audiofile.tag.genre.name    # per info sulle proprietà studiare la libreria, si trova in Python\Lib\site-packege\eyed3
+            result["tags"]["title"] = title.title()
+            result["tags"]["artist"] = sanitizeArtist(artist).title()
+            result["tags"]["album"] = album.title()
+            result["tags"]["tracknum"] = tracknum
+            result["tags"]["date"] = year
+            result["tags"]["length"] = round(audiofile.info.time_secs)
+            result["tags"]["genre"] = genre.title()
+            result["error"] = False
+        else:
+            result["error"] = True
+            result["message"] = "unable to load mp3 file"
 
     except Exception as e:
         result["error"] = True

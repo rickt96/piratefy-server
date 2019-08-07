@@ -1,0 +1,8 @@
+- dividere il processo in 3 scripts diversi
+1 per trovare tutte le canzoni e salvarle su un file csv
+2 per creare un db e creare la libreria artisti, album, canzoni
+3 ottenimento metadati api spotify
+
+per lo script 1 indicare un parametro su cui salvare la result degli scan
+per lo script 2 indicare un parametro da cui prendere il file csv da leggere
+script 3 non ha parametri

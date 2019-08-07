@@ -70,18 +70,18 @@ songs = common.getFiles(cfg.getDirs())
 
 print("* {} songs found".format(len(songs)))
 
-print("* fetching track metadata")
+print("* collecting tracks metadata...")
 
 for song in songs:
     try:
         res = tags.getTags(song)
-        if not res["error"]:
+        if res["error"] == False:
             db.execute(
                 "INSERT INTO songs_raw VALUES(?,?,?,?,?,?,?,?);", 
                 res["tags"]["title"], 
                 res["tags"]["album"], 
                 res["tags"]["artist"],
-                res["tags"]["year"],
+                res["tags"]["date"],
                 res["tags"]["length"],
                 res["tags"]["tracknum"],
                 res["tags"]["genre"],
@@ -122,13 +122,14 @@ db.commit()
 
 print("* building albums list...")
 
+# ERROR
 # inserimento distinct degli album
-# popola la tabella degli album prendendo prendendo i valori dalla tabella delle songs_raw
+# popola la tabella degli album prendendo i valori dalla tabella delle songs_raw
+# (select ROUND(avg(year)) from songs_raw as sr2 where sr2.album = sr.album)
 db.execute("""
-    insert into albums (title, artist_id, year)
+    insert into albums (title, artist_id)
     select distinct album,
         (select a.artist_id from artists as a where a.name = sr.artist),
-        (select ROUND(avg(year)) from songs_raw as sr2 where sr2.album = sr.album)
     from songs_raw as sr;
 """)
 db.commit()
