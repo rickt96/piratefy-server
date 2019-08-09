@@ -1,5 +1,6 @@
 import sys
 import os
+import csv
 
 
 
@@ -78,3 +79,22 @@ def prompt(question, default="yes"):
         else:
             sys.stdout.write("Please respond with 'yes' or 'no' "
                              "(or 'y' or 'n').\n")
+
+
+
+def createCsv(filename="scan.csv", data=[]):
+    #https://stackoverflow.com/questions/27092833/unicodeencodeerror-charmap-codec-cant-encode-characters
+    #https://realpython.com/python-csv/#reading-csv-files-with-csv
+    with open(filename, 'w+', newline='',  encoding="utf-8") as csvfile:
+        writer = csv.writer(csvfile, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL) #, quotechar='|', quoting=csv.QUOTE_MINIMAL
+        for row in data:
+            writer.writerow(row)
+
+
+
+def readCsv(filename="scan.csv", includeHeader=False):
+    data = []
+    with open(filename, 'rb') as f:
+        reader = csv.reader(f)
+        for row in reader:
+            data.append(row)
