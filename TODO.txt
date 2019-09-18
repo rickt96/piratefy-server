@@ -6,3 +6,7 @@
 per lo script 1 indicare un parametro su cui salvare la result degli scan
 per lo script 2 indicare un parametro da cui prendere il file csv da leggere
 script 3 non ha parametri
+
+
+crea doppioni di record di album con titolo "", risolvere
+testare sullo scan completo tutti e 3 gli script

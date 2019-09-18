@@ -10,6 +10,19 @@ client_secret = 'bdab4e32063f4404a362c08146533173' #os.environ['SPOTIPY_CLIENT_S
 token = None
 
 
+def sanitizeAlbumName(albumName):
+    if albumName.find('(') != -1:
+        index = albumName.find('(')
+        return albumName[0:index].strip()
+
+    if albumName.find('[') != -1:
+        index = albumName.find('[')
+        return albumName[0:index].strip()
+
+    if albumName.find('{') != -1:
+        index = albumName.find('{')
+        return albumName[0:index].strip()
+
 
 def getToken():
     global token
@@ -20,12 +33,12 @@ def getToken():
 
 
 def getArtistInfo(artistName=''):
-    getToken()
     result = {
         "status" : False,
         "message" : "",
         "info" : { "image":'', "spotify_id":'', "name":'' }
     }
+    getToken()
     sp = spotipy.Spotify(auth=token)
     searchResult = sp.search(q=artistName, limit=1, offset=0, type="artist")
     if len(searchResult['artists']['items']) > 0:
@@ -41,12 +54,13 @@ def getArtistInfo(artistName=''):
 
 
 def getAlbumInfo(albumName="", artistName=""):
-    getToken()
     result = {
         "status" : False,
         "message" : "",
         "info" : { "image":'', "spotify_id":'', "date":'' }
     }
+    albumName = sanitizeAlbumName(albumName)
+    getToken()
     sp = spotipy.Spotify(auth=token)
     searchResult = sp.search(q="album:"+albumName+" artist:"+artistName, limit=1, offset=0, type="album")
     if len(searchResult['albums']['items']) > 0:

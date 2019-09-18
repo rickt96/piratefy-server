@@ -8,7 +8,7 @@ from. import config, CONFIG_PATH
 # https://www.urlencoder.io/python/
 
 cfg = config.Config(CONFIG_PATH)
-api_key = cfg.getApiKey()
+api_key = cfg.getApiKey() #"21dde19ce5f13edddc9e3fea33bddb78"
 
 LASTFM_ALBUM_INFO = "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&artist={0}&album={1}&api_key={2}&format=json"
 LASTFM_ARTIST_INFO = "http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist={0}&api_key={1}&format=json"

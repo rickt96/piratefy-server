@@ -1,10 +1,10 @@
 {
-    "db_path": "db\\full.sqlite",
-    "api_key" : "21dde19ce5f13edddc9e3fea33bddb78",
-    "db_schema" : "db\\structure.sql",
+    "db_path": "db\\test.sqlite",
+    "csv_path": "",
+    "db_schema" : "structure.sql",
     "dirs": [ "D:\\MUSICA\\" ],
     "fetch_artists_info" : true,
-    "fetch_albums_info" : false,
+    "fetch_albums_info" : true,
     "last_scan" : "",
     "server_port" : 5000
 }

@@ -1,4 +1,5 @@
 import eyed3
+import os
 
 eyed3.log.setLevel("ERROR")
 
@@ -23,7 +24,15 @@ def getTags(path):
     result = {
         "error" : True,
         "message" : "",
-        "tags" : { }
+        "tags" : { 
+            "title": '',
+            "artist": '',
+            "album": '',
+            "tracknum": 0,
+            "date": '',
+            "length": 0,
+            "genre": ''
+        }
     }
     try:
         audiofile = eyed3.load(path) # possibile errore nel caricamento
@@ -41,10 +50,11 @@ def getTags(path):
             result["tags"]["date"] = year
             result["tags"]["length"] = round(audiofile.info.time_secs)
             result["tags"]["genre"] = genre.title()
-            result["error"] = False
         else:
-            result["error"] = True
-            result["message"] = "unable to load mp3 file"
+            #https://stackoverflow.com/questions/678236/how-to-get-the-filename-without-the-extension-from-a-path-in-python
+            base = os.path.basename(path)
+            result["tags"]["title"] = os.path.splitext(base)[0]
+        result["error"] = False
 
     except Exception as e:
         result["error"] = True
