@@ -74,6 +74,14 @@ Seguire queste operazioni per la configurazione iniziale:
 - al termine della scansione eseguire **api.py** (tramite console, non IDLE) per avviare le rest api
 
   
+## Nota percorsi canzoni
+
+Sulla tabella SONGS i PATH memorizzati sono assoluti, se la macchina in cui si avvia il server è diversa da quella in cui si è effettuata la scansione
+c'è la possibilità che la label del disco contente le canzoni sia diversa.
+nel caso lanciare su DB questa query
+```
+UPDATE songs SET path = REPLACE(path,'D:\','E:\')
+```
   
 
 ##  Routing API

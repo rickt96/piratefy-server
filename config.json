@@ -2,7 +2,7 @@
     "db_path": "db\\test.sqlite",
     "csv_path": "",
     "db_schema" : "structure.sql",
-    "dirs": [ "D:\\MUSICA\\" ],
+    "dirs": [ "E:\\MUSICA\\" ],
     "fetch_artists_info" : true,
     "fetch_albums_info" : true,
     "last_scan" : "",

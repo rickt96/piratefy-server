@@ -81,6 +81,16 @@ def get_album(albumID):
 # API SONGS
 # ##########################################################################################
 
+'''
+per gestire le informazioni più verbose sugli artisti serve questa query
+cosi ritorno anche il nome dell'artista e dell'album per ogni song
+
+select 
+	s.*, a.title as 'ALBUM_TITLE', a.COVER_URL as 'ALBUM_COVER', ar.ARTIST_ID, ar.name as 'ARTIST_NAME', ar.IMAGE_URL as 'ARTIST_COVER' 
+from SONGS as s
+join albums as a on s.ALBUM_ID = a.ALBUM_ID
+join artists as ar on a.ARTIST_ID = ar.ARTIST_ID
+'''
 
 @app.route("/api/songs", methods=["GET"])
 def get_songs():
@@ -100,6 +110,8 @@ def get_song(songID):
 def play_partial(songID):
     path = songsController.getSongPath(songID)
 
+    # verifica il percorso della risorsa
+    # NB la label del disco potrebbe cambiare se si avvia il server su un altra macchina
     if os.path.isfile(path) == False:
         abort(404)
     

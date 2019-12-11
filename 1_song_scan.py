@@ -24,7 +24,7 @@ data = [
 
 # scan directories
 print("* start directories scanning...")
-songs = common.getFiles(["D:\\MUSICA\\Soulfly"])#cfg.getDirs())
+songs = common.getFiles(cfg.getDirs())
 print("* {} tracks found".format(len(songs)))
 
 

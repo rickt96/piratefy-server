@@ -62,10 +62,10 @@ class SongsController:
     def getSongPath(self, song_id):
         '''restituisce il percorso della canzone specificata'''
         q = "SELECT PATH FROM SONGS WHERE SONG_ID = {}".format(song_id)
-        data = db_conn.fetchOne(q)["PATH"]
-        if data is None:
-            data = ""
-        return data
+        
+        data = db_conn.fetchOne(q) #["PATH"]
+        path = data['PATH']
+        return path
 
 
 
