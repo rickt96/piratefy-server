@@ -96,7 +96,11 @@ join artists as ar on a.ARTIST_ID = ar.ARTIST_ID
 def get_songs():
     page = int(request.args.get('page', 0))
     limit = int(request.args.get('limit', 15))
-    data = songsController.getAll(limit, page)
+    query = str(request.args.get('query', ''))
+    asc = bool(request.args.get('asc', True))
+    sort = str(request.args.get('sort', ''))
+    
+    data = songsController.getAll(limit, page, sort, asc, query)
     return flask.jsonify(data)
 
 

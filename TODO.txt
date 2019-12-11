@@ -10,3 +10,6 @@ script 3 non ha parametri
 
 crea doppioni di record di album con titolo "", risolvere
 testare sullo scan completo tutti e 3 gli script
+
+
+finire filtering delle getAll
