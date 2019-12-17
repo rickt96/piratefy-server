@@ -44,7 +44,8 @@ albumsController = controllers.AlbumsController()
 def get_artists():
     page = int(request.args.get('page', 0))
     limit = int(request.args.get('limit', 15))
-    data = artistsController.getAll(limit, page)
+    query = str(request.args.get('query', ''))
+    data = artistsController.getAll(limit, page, query)
     return flask.jsonify(data)
 
 
@@ -65,7 +66,8 @@ def get_artist(artistID):
 def get_albums():
     page = int(request.args.get('page', 0))
     limit = int(request.args.get('limit', 15))
-    data = albumsController.getAll(limit, page)
+    query = str(request.args.get('query', ''))
+    data = albumsController.getAll(limit, page, query)
     return flask.jsonify(data)
 
 
@@ -75,38 +77,38 @@ def get_album(albumID):
     return flask.jsonify(data)
 
 
+@app.route("/api/albums/byartist/<int:artistID>", methods=["GET"])
+def get_album_by_artist(artistID):
+    data = albumsController.getByArtist(artistID)
+    return flask.jsonify(data)
+
+
 
 
 # ##########################################################################################
 # API SONGS
 # ##########################################################################################
 
-'''
-per gestire le informazioni più verbose sugli artisti serve questa query
-cosi ritorno anche il nome dell'artista e dell'album per ogni song
-
-select 
-	s.*, a.title as 'ALBUM_TITLE', a.COVER_URL as 'ALBUM_COVER', ar.ARTIST_ID, ar.name as 'ARTIST_NAME', ar.IMAGE_URL as 'ARTIST_COVER' 
-from SONGS as s
-join albums as a on s.ALBUM_ID = a.ALBUM_ID
-join artists as ar on a.ARTIST_ID = ar.ARTIST_ID
-'''
-
 @app.route("/api/songs", methods=["GET"])
 def get_songs():
     page = int(request.args.get('page', 0))
     limit = int(request.args.get('limit', 15))
     query = str(request.args.get('query', ''))
-    asc = bool(request.args.get('asc', True))
-    sort = str(request.args.get('sort', ''))
-    
-    data = songsController.getAll(limit, page, sort, asc, query)
+    #asc = bool(request.args.get('asc', True))
+    #sort = str(request.args.get('sort', ''))
+    data = songsController.getAll(limit, page, query)
     return flask.jsonify(data)
 
 
 @app.route("/api/songs/<int:songID>", methods=["GET"])
 def get_song(songID):
     data = songsController.getById(songID)
+    return flask.jsonify(data)
+
+
+@app.route("/api/songs/byalbum/<int:albumID>", methods=["GET"])
+def get_songs_by_album(albumID):
+    data = songsController.getByAlbum(albumID)
     return flask.jsonify(data)
 
 
